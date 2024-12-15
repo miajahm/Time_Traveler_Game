@@ -1,0 +1,112 @@
+
+# Miajah Marable
+
+def show_instructions():
+    # Print a main menu and the commands
+    print("\nTime Travelers Quest Game")
+    print("Collect 6 items to win the game, or be frozen in time.")
+    print("Move commands: South, North, East, West")
+    print("Add to Inventory: 'yes/no' ")
+    print("Type 'exit' to quit the game.")
+    print("Type 'inventory' to view your current items.")
+
+def time_travelers_quest():
+    print("\nWelcome to Time Traveler's Quest!")
+    print("You are on a quest to explore different time periods.")
+    print("Beware of Mr. Time, the evil villain. If you encounter him, the game is over!")
+    show_instructions()
+
+def check_item_in_room(room):
+    # Check if there is an item in the current room
+    return items.get(room, None)  # Get the item in the room (or None if no item)
+
+def add_to_inventory(item, inventory):
+    # Add an item to the inventory.
+    inventory.append(item)  # Add item to inventory
+    print(f"\nYou have added {item} to your inventory.")
+
+def pick_up_item(item, inventory, current_room):
+    # Allow the player to pick up an item if they choose to.
+    decision = input(f"Do you want to pick up the {item}? (yes/no): ").strip().lower()
+    if decision == 'yes':
+        add_to_inventory(item, inventory)  # Call the function to add item to inventory
+        items[current_room] = None  # Remove the item from the room
+        print(f"The {item} has been removed from the room.")
+        check_win_condition(inventory)  # Check if the game is won
+    else:
+        print(f"\nYou leave the {item} behind.")
+
+def check_win_condition(inventory):
+    # Check if the player has collected all required items.
+    if len(inventory) == 6:  # Assuming there are 6 unique items to collect
+        print("\nCongratulations! You have collected all items and won the game!")
+        exit()  # Exit the game
+
+# Game variables
+game_over = False
+inventory = []
+current_room = 'Time Machine'
+
+# Room directions and items
+rooms = {
+    'Time Machine': {'East': 'The Great Depression', 'South': 'Wild West'},
+    'The Great Depression': {'West': 'Time Machine'},
+    'Wild West': {'West': 'New Millennium', 'East': "Pharaoh's Tomb", "South": 'World War II', 'North': 'Time Machine'},
+    'New Millennium': {'East': 'Wild West'},
+    "Pharaoh's Tomb": {'West': "Wild West", 'North': 'Renaissance'},
+    'Renaissance': {'South': "Pharaoh's Tomb"},
+    'World War II': {'East': 'Year 2020', 'North': 'Wild West'},
+    'Year 2020': {'West': 'World War II'},
+}
+
+items = {
+    "The Great Depression": "Brick of Gold",
+    "Renaissance": "Horse",
+    "New Millennium": "Computer",
+    "Year 2020": None,  # No item in Year 2020
+    "Wild West": "Flask",
+    "Pharaoh's Tomb": "Mummy Cloth",
+    "World War II": "Victory Medal"
+}
+
+# Start the player at 'Time Machine'
+current_room = "Time Machine"
+
+# Call the game start and instructions
+time_travelers_quest()  # Start the game and show instructions
+
+print("\nYou are in", current_room)
+
+while True:  # Infinite loop starts
+    # Check if there is an item in the room
+    item_in_room = check_item_in_room(current_room)
+
+    # If there is an item, give the player the option to pick it up
+    if item_in_room:
+        pick_up_item(item_in_room, inventory, current_room)
+
+    user_input = input("\nEnter your move (or type 'inventory' to check your items): ").strip().lower()
+
+    # Allow the user to view their inventory
+    if user_input == "inventory":
+        print("\nYour inventory:", inventory)
+
+    # End game if user types 'exit':
+    elif user_input == "exit":
+        print("Game over! Thanks for playing!")
+        break  # This exits the while loop
+
+    # Check if user input is valid for moving between rooms
+    elif user_input.capitalize() in rooms[current_room]:
+        current_room = rooms[current_room][user_input.capitalize()]
+        print(f"\nYou moved {user_input}. You are now in the {current_room}.")
+    else:
+        print("Invalid move")
+
+    # End game if user enters 'Year 2020' room:
+    if current_room == "Year 2020":
+        print("You are in the room 2020! Mr. Time has you frozen! Game Over!")
+        break
+
+# Display the player's inventory after the game ends
+print("\nYour final inventory:", inventory)
